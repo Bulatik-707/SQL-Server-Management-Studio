@@ -1,0 +1,8 @@
+для увеличения 5%
+
+Update DVD
+SET Price = Price + ((Price * 5) / 100)
+Для уменьшения 5%
+
+Update DVD
+SET Price = Price - ((Price * 5) / 100)

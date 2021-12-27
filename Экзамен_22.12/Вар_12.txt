@@ -1,0 +1,164 @@
+1) Вопрос
+
+Объявление и назначение переменных (параметров) в процедуре.???
+
+
+Переменная - обьект, выступающий в качестве заполнителя для области памяти.
+--------------
+Типы:
+
+ локальная (@) - имеет огр. в преелах 1го сеанса;
+ глобальная (@@) - инфа о сеансе
+----------------------
+Обьявление DECLARE @Name  ТИП
+
+(DECLARE) - по умолчанию NULL
+
+
+Declare @per int/ varchar /  
+------------------------
+Присвоение: 
+
+1) DECLARE @Name  int = 20  
+Print @Name
+
+2)SET - присвоить (=) значение одной переменной после обьявления переменной
+    (если Х =, пишем Х Set )
+
+DECLARE @Name  ТИП
+SET @Name = 99
+
+3) SELECT - можно писваивать нескольким значениям
+
+--DECLARE @A int, @B int, @C varchar(9)
+--SELECT @A = 33, @C = 'AMD RYZEN'
+--Print @A
+--Print @B
+--Print @C
+
+
+
+USE [406_Борей_Мухаматуллин]
+DECLARE @Name  int = 20
+Print @Name
+ Print '========'
+ 
+DECLARE @A int  
+SET @A = 13
+Print @A
+Print '--------'
+
+DECLARE @A1 int, @B1 varchar(5)  
+SET @A1 = 13
+SET @B1 = '1234567'
+Print @A1
+Print @B1
+ Print '------'
+ 
+DECLARE @A2 varchar(5)  
+SET @A2 = (SELECT КодКлиента FROM Заказы2 Where КодЗаказа = 10248)
+Print @A2
+Print '========='
+
+DECLARE @A3 varchar(5)
+SELECT @A3 = 33
+Print @A3
+Print '--------'
+
+DECLARE @A4 int, @B4 int, @C4 varchar(7)
+SELECT @A4 = 33, @C4 = 'AMD RYZEN'
+Print @A4
+Print @B4
+Print @C4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==========================
+
+2) Задание  
+
+Создать Т_Счет (Номер счета, приход, расход, остаток, годовой доход, Процент)
+Заполнить 50 Записей (Номер счета - сетчик)
+На счет каждого клиента положить сумму как Номер счета * 1000
+Годовой процент 12% (если сумма > 1000 руб.)
+% дохода в новое поле процент и вывести общую сумму поле годовой доход.
+
+
+--Создать Т_Счет (Номер_счета, Приход, Расход, Остаток, Годовой_доход, Процент)
+--Заполнить 50 Записей (Номер_счета - сетчик)
+--На счет каждого клиента положить сумму как Номер_счета * 1000
+--Годовой процент 12% (если Годовой_доход > 1000 руб. НА ПРИХОД)
+--% дохода в новое поле процент,  и вывести общую сумму поле Годовой_доход.
+
+USE [406_Борей_Мухаматуллин]
+GO
+--Create proc _Igzamen__Pro_T_Shet__50_Zap
+--AS
+--Если таблица ЕСТЬ, то Удалить
+if object_id('Т_Счет') is not null drop table Т_Счет 
+
+--Созд. Табл, с полями
+Create table Т_Счет
+(Номер_счета int primary key identity(1,1),
+Приход money,
+Расход money,
+Остаток money,
+Годовой_доход money,
+Процент int)
+
+Declare @id int,  @Prihod money, @Rashod money, @Ostatok money, @God_dohod money, @Procent int
+
+Set @id = 1 -- Ключ нач. от
+While (@id < 51) --Доб 50 записей
+
+--Заполняем поля Табл_
+BEGIN
+Set @Prihod = @id * 1000
+SET @Rashod = 0
+SET @Ostatok = @Prihod - @Rashod
+If(@Ostatok > 1000) Set @God_dohod = @Prihod + @Prihod * 0.12
+ELSE SET @God_dohod = 0
+If(@Ostatok > 1000) Set @Procent = 12
+Else Set @Procent = 0
+
+--Доб. в табл (поле - значение)
+insert into Т_Счет(Приход, Расход, Остаток, Годовой_доход, Процент)
+  values (@Prihod, @Rashod, @Ostatok, @God_dohod, @Procent)
+ 
+ Set @id = @id+1 --Id_записи четчик
+ Continue
+END
+
+SELeCT * FROM Т_Счет
+
+--Заполняем поля Табл_
+BEGIN
+Set @Prihod = @id * 1000
+SET @Rashod = @id * 73
+SET @Ostatok = @Prihod - @Rashod
+If(@Prihod > 1000) Set @God_dohod = @Prihod + @Prihod  * (@Proc / 100.0)  + @Procent
+ELSE SET @God_dohod = 0
+
+If(@Prihod > 1000) Set @Procent = (@God_dohod / 100.0)  
+ELSE SET @Procent = 0
+
+--Доб. в табл (поле - значение)
+insert into Т_Счет(Приход, Расход, Остаток, Годовой_доход, Процент)
+  values (@Prihod, @Rashod, @Ostatok, @God_dohod, @Procent)
+ 
+ Set @id = @id+1 --Id_записи четчик
+Continue
+END
+
+SELeCT * FROM Т_Счет
